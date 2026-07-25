@@ -1,0 +1,2 @@
+# Normalize line endings to LF in the repository (quiets CRLF warnings, keeps diffs clean)
+* text=auto

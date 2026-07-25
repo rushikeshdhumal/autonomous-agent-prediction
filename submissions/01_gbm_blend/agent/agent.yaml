@@ -1,0 +1,14 @@
+name: gbm_blend_agent
+description: Autonomous tabular ML agent that runs a bundled cross-validated GBM-blend skill and submits its predictions.
+model: gemini-3.1-flash-lite
+instruction: !include prompts/system.md
+tools:
+  - run_command
+  - read_file
+  - write_file
+  - submit_predictions
+  - select_submission
+  - get_status
+skills:
+  - skills/auto-ml
+generate_content_config: !include configs/sampling.yaml

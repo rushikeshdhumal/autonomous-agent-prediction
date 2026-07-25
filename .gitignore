@@ -1,0 +1,29 @@
+# ---- Secrets ----
+.env
+
+# ---- Python environments ----
+.venv/
+.venv-dev/
+__pycache__/
+*.pyc
+*.egg-info/
+
+# ---- Competition assets (NOT redistributed — fetch from the Kaggle starter kit) ----
+# data/ contains solution.csv answer keys for an ONGOING competition — never commit it.
+data/
+# wheels/ are competition-provided binaries (adk_submission, kaggle_kaggle).
+wheels/
+
+# ---- Generated artifacts ----
+dev/cache/
+dev/tuned_cache/
+output/
+submissions/*/output/
+submissions/*/submission.zip
+
+# ---- Local tooling / OS ----
+.claude/settings.local.json
+.DS_Store
+
+# ---- Docs ----
+KAGGLE_COMPETITION_PLAN.md
