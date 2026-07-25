@@ -17,17 +17,16 @@ while all the intelligence lives in a pre-tested gradient-boosting pipeline bund
 
 ## Results
 
-| | Score |
-| :--- | :--- |
-| Offline mean ROC AUC (16 folds, greedy 3-GBM blend) | ~0.798 |
-| **First Kaggle submission (public LB)** | **0.805** |
-| Tuned blend (early stopping) — offline | ~0.803 (expected ~0.81 LB) |
-| Leaderboard top (cluster 0.823–0.830) | 0.830 |
+| | Offline mean AUC | Public LB |
+| :--- | :--- | :--- |
+| v1 — untuned greedy 3-GBM blend | ~0.798 | **0.805** |
+| v2 — tuned (early stopping) greedy blend | ~0.8025 | **0.809** |
+| Leaderboard top (cluster 0.823–0.830) | | 0.830 |
 
 The headline finding: **our offline score (against the provided `solution.csv`) predicts the
-leaderboard almost exactly** (offline ~0.80 → LB 0.805). That lets us iterate the model entirely
-offline — free, no LLM, no Docker, no submission slots — and only submit when we have a *measured*
-gain.
+leaderboard almost exactly** — confirmed twice now, including matching the v1→v2 *delta* (+0.004
+offline → +0.004 on the leaderboard). That lets us iterate the model entirely offline — free, no LLM,
+no Docker, no submission slots — and only submit when we have a *measured* gain.
 
 ---
 
