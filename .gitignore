@@ -17,6 +17,10 @@ wheels/
 # ---- Generated artifacts ----
 dev/cache/
 dev/tuned_cache/
+dev/hpo_cache/
+dev/nn_cache/
+dev/_anytime_tmp/
+dev/hpo_shortlist.json
 output/
 submissions/*/output/
 submissions/*/submission.zip
@@ -27,3 +31,4 @@ submissions/*/submission.zip
 
 # ---- Docs ----
 KAGGLE_COMPETITION_PLAN.md
+GOTCHAS.md
