@@ -8,25 +8,11 @@ human in the loop**, inside a locked-down sandbox — where it must explore data
 submit predictions for **16 tabular binary-classification datasets**, scored on **ROC AUC**.
 
 Our design is a **thin LLM agent + one deterministic modeling skill**: the LLM merely orchestrates,
-while all the intelligence lives in a pre-tested gradient-boosting pipeline bundled as a skill.
+while all the intelligence lives in a pre-tested modeling pipeline bundled as a skill.
 
 > 📚 **Full documentation is in [`docs/`](docs/README.md)** — competition mechanics, data, harness
 > internals, strategy, the modeling pipeline, the agent design, the dev workflow, and results.
-
----
-
-## Results
-
-| | Offline mean AUC | Public LB |
-| :--- | :--- | :--- |
-| v1 — untuned greedy 3-GBM blend | ~0.798 | **0.805** |
-| v2 — tuned (early stopping) greedy blend | ~0.8025 | **0.809** |
-| Leaderboard top (cluster 0.823–0.830) | | 0.830 |
-
-The headline finding: **our offline score (against the provided `solution.csv`) predicts the
-leaderboard almost exactly** — confirmed twice now, including matching the v1→v2 *delta* (+0.004
-offline → +0.004 on the leaderboard). That lets us iterate the model entirely offline — free, no LLM,
-no Docker, no submission slots — and only submit when we have a *measured* gain.
+> Results and leaderboard history live there, not in this file.
 
 ---
 
@@ -52,8 +38,11 @@ flowchart LR
 
 - **Modeling pipeline** — infers each column's type from the data (no schema file at eval time),
   one-hot-encodes low-cardinality categoricals, ordinal-encodes `ord_*` columns, keeps numeric with
-  NaN preserved, then trains an early-stopping **LightGBM + XGBoost + CatBoost** blend with
-  greedy (Caruana) weighting on out-of-fold predictions.
+  NaN preserved, then grows a pool of models — early-stopping **LightGBM + XGBoost + CatBoost**
+  plus a small **PyTorch MLP** as a structurally different member — greedy (Caruana) weighted on
+  out-of-fold predictions. The pipeline is *anytime-safe*: a valid submission exists within about a
+  second and only improves as more time is available, so it can't fail to produce output regardless
+  of the sandbox's real (undisclosed) time limit.
 - **Thin agent** — `load_skill → run_skill_script → submit_predictions → select_submission`. Uses
   ~6 LLM calls and ~$0.01 per dataset; all intelligence is in the deterministic skill.
 
@@ -70,8 +59,11 @@ flowchart LR
 │   ├── pipeline.py                #   schema-adaptive pipeline (library form)
 │   ├── score_all_folds.py         #   run + score all 16 folds vs solution.csv
 │   ├── experiment.py              #   cache per-model OOF/test arrays, search blends
-│   ├── tune.py                    #   tuning experiments (early stopping, etc.)
-│   └── blend_tuned.py             #   blend the tuned models
+│   ├── tune.py                    #   early-stopping tuning experiments
+│   ├── hpo.py                     #   offline random-search HPO + diverse shortlist selection
+│   ├── eval_anytime.py            #   runs the ACTUAL deployed skill script end-to-end
+│   ├── nn_test.py                 #   MLP blend member experiment
+│   └── blend_with_nn.py           #   validates the MLP's gain combined with the full GBM pool
 ├── submissions/
 │   └── 01_gbm_blend/agent/        # THE SUBMISSION (compiled by adk-submission)
 │       ├── agent.yaml             #   agent definition (model, tools, skill)
